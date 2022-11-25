@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import LoginForm, { LoginFormData } from "../components/LoginForm/LoginForm";
-import { BASE_URL } from "../servises/api";
+import { API } from "../servises/api";
 
 const LoginView = () => {
   const navigate = useNavigate();
@@ -13,18 +13,7 @@ const LoginView = () => {
       setResult("");
       setError("");
       try {
-        const response = await fetch(`${BASE_URL}/auth`, {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(data)
-        });
-        if (response.status !== 200) {
-          const responseData = await response.json();
-          throw Error(responseData.message);
-        }
+        await API.auth.login(data);
         setResult("Пользователь успешно вошел!");
         setTimeout(() => {
           navigate("/");

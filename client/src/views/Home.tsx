@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BASE_URL } from "../servises/api";
+import { API } from "../servises/api";
 
 function Home() {
   const [result, setResult] = useState("");
@@ -12,15 +12,7 @@ function Home() {
       setResult("");
       setError("");
       try {
-        const response = await fetch(`${BASE_URL}/user`, {
-          credentials: "include",
-          method: "GET"
-        });
-        if (response.status !== 200) {
-          const responseData = await response.json();
-          throw Error(responseData.message);
-        }
-        const user = await response.json();
+        const user = await API.user.getCurrentUser();
         setResult(`Добро пожаловать, ${user.login}`);
         setLogged(true);
       } catch (e) {
@@ -35,10 +27,7 @@ function Home() {
   const handleLogout = () => {
     const logoutRequest = async () => {
       try {
-        await fetch(`${BASE_URL}/auth`, {
-          credentials: "include",
-          method: "DELETE"
-        });
+        await API.auth.logout();
         setLogged(false);
         setResult("");
       } catch (e) {
