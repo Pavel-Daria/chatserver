@@ -1,30 +1,24 @@
 const nanoid = require("nanoid");
 const {getDb} = require("./db");
 
-const TABLE_NAME = "tokens";
-
 module.exports = {
-    TABLE_NAME,
     getUserIdByToken: async (token) => {
-        const result = await getDb().get(`SELECT * FROM ${TABLE_NAME} WHERE token = ?`, token);
-        return result?.userId;
+        const result = await getDb().models.Token.findOne({where: {token}});
+        return result?.UserId;
     },
     deleteByToken: async (token) => {
-        await getDb().get(`DELETE FROM ${TABLE_NAME} WHERE token = ?`, token);
+        await getDb().models.Token.destroy({where: {token}});
     },
-    addToken: async (userId) => {
+    addToken: async (UserId) => {
         const token = nanoid();
-        const tokenRow = await getDb().get(`SELECT * FROM ${TABLE_NAME} WHERE userId = ?`, userId)
+        const tokenRow = await getDb().models.Token.findOne({where: {UserId}});
         if (tokenRow) {
-            await getDb().run(
-                `UPDATE ${TABLE_NAME} SET token = ? WHERE userId = ?`,
-                token, userId
-            );
+            tokenRow.token = token;
+            await tokenRow.save();
         } else {
-            await getDb().run(
-                `INSERT INTO ${TABLE_NAME} (token, userId) VALUES (?, ?)`,
-                token, userId
-            );
+            const newTokenRow = await getDb().models.Token.create({token});
+            const user = await getDb().models.User.findByPk(UserId);
+            await newTokenRow.setUser(user);
         }
         return token;
     },

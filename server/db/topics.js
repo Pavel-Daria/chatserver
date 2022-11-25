@@ -4,22 +4,17 @@ const TABLE_NAME = "topics";
 
 module.exports = {
     getAllTopics: async () => {
-        return getDb().all(`SELECT * FROM ${TABLE_NAME}`);
+        return await getDb().models.Topic.findAll();
     },
     getTopicById: async (id) => {
-        return getDb().get(`SELECT * FROM ${TABLE_NAME} WHERE id = ?`, id);
+        return await getDb().models.Topic.findByPk(id);
     },
     createTopic: async (theme, userId) => {
-        const newTopic = {
-            theme,
-            userId,
-            createdAt: new Date().getTime()
-        };
-        const result = await getDb().run(
-            `INSERT INTO ${TABLE_NAME} (theme, authorId, createdAt) VALUES (?, ?, ?)`,
-            newTopic.theme, newTopic.userId, newTopic.createdAt
-        );
-        newTopic.id = result.lastID;
+        const newTopic = await getDb().models.Topic.create({
+            theme
+        });
+        const user = await getDb().models.User.findByPk(userId);
+        await newTopic.setUser(user);
         return newTopic;
     },
 }
