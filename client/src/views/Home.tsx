@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import { API } from "../servises/api";
+import './Form.css'
+import {Link, Outlet} from "react-router-dom";
 
 function Home() {
   const [result, setResult] = useState("");
   const [error, setError] = useState("");
   const [isLogged, setLogged] = useState(false);
+  const  [messages, setMessages] = useState([]);
 
   useEffect(() => {
     const userRequest = async () => {
@@ -40,11 +43,15 @@ function Home() {
   };
 
   return <>
-    <h3>Home</h3>
-    Home sweet home
+  <div className="res">
+
     {result && <div>{result}</div>}
     {error && <div>{error}</div>}
     {isLogged && <button onClick={handleLogout}>Разлогиниться</button>}
+  </div>
+    <div className="forum">
+    </div>
+
   </>;
 }
 

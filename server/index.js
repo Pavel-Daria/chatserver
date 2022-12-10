@@ -5,8 +5,10 @@ const userRouter = require("./routes/user");
 const authRouter = require("./routes/auth");
 const topicRouter = require("./routes/topic");
 const {initDb} = require("./db/db");
-
+const events = require('events')
 const app = express();
+
+const  emitter = new events.EventEmitter();
 
 // чтобы парсился POST в виде JSON
 app.use(express.json());
@@ -24,6 +26,18 @@ app.use(
 app.get("/", (req, res) => {
     res.status(200).json({ok: true});
 });
+app.get('/get-messages', (req, res) => {
+    emitter.once('newMessage',(message) => {
+        res.json(message)
+    })
+})
+
+app.post('/new-messages',((req, res) => {
+    const message = req.body;
+    emitter.emit('newMessage', message)
+    res.status(200);
+
+}))
 
 app.use("/auth", authRouter);
 app.use("/user", userRouter);

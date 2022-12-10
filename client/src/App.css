@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  background-color: white;
 }
 
 .App-logo {
@@ -39,4 +40,8 @@
 
 ul {
   list-style-type: none;
+}
+
+.li {
+  color: red;
 }
